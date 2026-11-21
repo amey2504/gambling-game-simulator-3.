@@ -5,7 +5,8 @@ const SIGNS = ["★", "♠", "♥", "♦", "♣", "☀", "☂", "⚡", "☯", "�
 
 export default function App() {
   const [entry, setEntry] = useState(100);
-  const [prize, setPrize] = useState(1000);
+  const prize = entry * 10;
+const entryInvalid = entry < 100;
   const [counts, setCounts] = useState(Array(10).fill(0));
   const [winningSign, setWinningSign] = useState(null);
   const [history, setHistory] = useState([]);
@@ -36,6 +37,10 @@ export default function App() {
   }
 
   function revealSign() {
+    if (entry < 100) {
+  alert("Minimum entry fee is $100.");
+  return;
+}
     if (totalPlayers === 0) {
       alert("Add participants first!");
       return;
@@ -125,9 +130,7 @@ export default function App() {
       <main style={{ maxWidth: 1050, margin: "auto" }}>
 
         <header style={{ marginBottom: 25 }}>
-          <div style={{ color: "#818cf8", letterSpacing: 2 }}>
-            ACADEMIC CASE STUDY
-          </div>
+        
           <h1 style={{ fontSize: 36 }}>
             Gambling Game Simulator
           </h1>
@@ -136,36 +139,54 @@ export default function App() {
           </p>
         </header>
 
-        <section style={panel}>
-          <h2>Game Configuration</h2>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
-            gap: 15
-          }}>
-            <label>
-              <span style={muted}>Entry Fee ($)</span>
-              <input type="number" min="0" value={entry}
-                style={field}
-                onChange={e => {
-                  setEntry(Math.max(0, Number(e.target.value)));
-                  setWinningSign(null);
-                }} />
-            </label>
-            <label>
-              <span style={muted}>Winning Payout ($)</span>
-              <input type="number" min="0" value={prize}
-                style={field}
-                onChange={e => {
-                  setPrize(Math.max(0, Number(e.target.value)));
-                  setWinningSign(null);
-                }} />
-            </label>
-          </div>
-          <p style={muted}>
-            Winning payout includes the original $100 entry fee.
-          </p>
-        </section>
+       
+<section style={panel}>
+  <h2>Entry Fee</h2>
+
+  <label>
+    <span style={muted}>Enter participant amount ($)</span>
+
+    <input
+      type="number"
+      min="100"
+      value={entry}
+      style={{
+        ...field,
+        border: entryInvalid
+          ? "2px solid #ef4444"
+          : "1px solid #3a4b65"
+      }}
+      onChange={e => {
+        setEntry(e.target.value === "" ? 0 : Number(e.target.value));
+        setWinningSign(null);
+      }}
+    />
+  </label>
+
+  {entryInvalid && (
+    <p style={{ color: "#ef4444", fontSize: 13 }}>
+      Amount not accepted. Minimum entry fee is $100.
+    </p>
+  )}
+
+  <p style={muted}>Minimum entry fee: $100</p>
+
+  <div style={{
+    background: "#0b1020",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 15
+  }}>
+    <span style={muted}>Automatic Winning Payout</span>
+    <h2 style={{ color: "#34d399" }}>
+      ${ (entry * 10).toLocaleString("en-US") }
+    </h2>
+    <small style={muted}>
+      Winning payout = Entry fee × 10
+    </small>
+  </div>
+</section>
+
 
         <section style={panel}>
           <h2>Participant Sign Selection</h2>
